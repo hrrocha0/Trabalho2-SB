@@ -42,6 +42,9 @@ omsg1		db		"ESCOLHA UMA OPÇÃO:", LF
 			db		"- 7: SAIR", LF
 OMSG1_SIZE	equ		$ - omsg1
 
+emsg1		db		"OCORREU OVERFLOW", LF
+EMSG1_SIZE	equ		$ - emsg1
+
 section	.bss
 ; Variáveis globais não inicializadas
 name		resb	NAME_SIZE
@@ -299,11 +302,11 @@ itos:
 
 	inc		edi
 .itos_l2:
-	cmp		edi, size
-	jae		.itos_l3
-
 	cmp		esi, 0
 	jbe		.itos_l3
+
+	cmp		edi, size
+	jae		.itos_l3
 
 	dec		esi
 
@@ -403,9 +406,8 @@ exit:
 	mov		eax, SYS_EXIT
 	mov		ebx, code
 	int		80h
-	leave
-	ret		4
 
+; Includes
 %include	"add.asm"
 %include	"sub.asm"
 %include	"mul.asm"

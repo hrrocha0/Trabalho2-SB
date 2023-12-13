@@ -5,10 +5,38 @@ section	.text
 %define		result	dword	[ebp - 12]
 %define		char	word	[ebp - 14]
 op_div:
-	enter	0, 0
-; TODO: ##############################
+	enter	14, 0
+	push	eax
+	push	ebx
+	push	edx
+
+	call	readi
+	mov		first, eax
+
+	call	readi
+	mov		second, eax
+
+	mov		edx, 0
+	mov		eax, first
+	idiv	second
+	cwde
+	mov		result, eax
+
+	push	eax
+	call	printi
+.op_div_l1:
+	lea		ebx, char
+
 	push	1
-	call	exit
-; TODO: ##############################
+	push	ebx
+	call	read
+
+	mov		ax, char
+	cmp		al, LF
+	jne		.op_div_l1
+
+	pop		edx
+	pop		ebx
+    pop		eax
 	leave
 	ret
