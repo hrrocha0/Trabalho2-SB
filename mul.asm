@@ -22,32 +22,32 @@ op_mul:
 	mov		result, eax
 
 	cmp		edx, 0
-	je		.op_mul_l1
+	jg		.op_mul_l2
+
 	cmp		edx, -1
-	je		.op_mul_l1
+	jl		.op_mul_l2
 
-	push	EMSG1_SIZE
-	push	emsg1
-	call	print
-
-	push	1
-	call	exit
-.op_mul_l1:
-	push	eax
+	push	result
 	call	printi
-.op_mul_l2:
+.op_mul_l1:
 	lea		ebx, char
-
 	push	1
 	push	ebx
 	call	read
 
 	mov		ax, char
 	cmp		al, LF
-	jne		.op_mul_l2
+	jne		.op_mul_l1
 
 	pop		edx
 	pop		ebx
-    pop		eax
+	pop		eax
 	leave
 	ret
+.op_mul_l2:
+	push	EMSG1_SIZE
+	push	emsg1
+	call	print
+
+	push	1
+	call	exit
