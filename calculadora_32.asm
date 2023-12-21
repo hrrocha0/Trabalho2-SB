@@ -246,7 +246,7 @@ readi:
 
 ; Converte um inteiro em uma string
 ; Parâmetros:
-;	 1 - o inteiro
+;	 1 - valor do inteiro
 ;	 2 - tamanho da string em bytes
 ;	 3 - ponteiro para a string
 ; Retorno: quantidade de caracteres
@@ -401,7 +401,7 @@ stoi:
 
 ; Termina a execução do programa
 ; Parâmetros:
-;	 1 - Código de saída
+;	 1 - código de saída
 ; Retorno: nenhum
 %define		code	dword	[ebp + 8]
 exit:
