@@ -97,16 +97,22 @@ execute:
 
 	cmp		code, OPTN_ADD
 	je		.execute_l1
+
 	cmp		code, OPTN_SUB
 	je		.execute_l2
+
 	cmp		code, OPTN_MUL
 	je		.execute_l3
+
 	cmp		code, OPTN_DIV
 	je		.execute_l4
+
 	cmp		code, OPTN_EXP
 	je		.execute_l5
+
 	cmp		code, OPTN_MOD
 	je		.execute_l6
+
 	cmp		code, OPTN_END
 	je		.execute_l7
 
@@ -139,10 +145,10 @@ execute:
 ; Imprime uma string na tela
 ; Parâmetros:
 ;	 1 - tamanho da string em bytes
-;	 2 - endereço da string
+;	 2 - ponteiro para a string
 ; Retorno: nenhum
 %define		size	dword	[ebp + 12]
-%define		address	dword	[ebp + 8]
+%define		string	dword	[ebp + 8]
 print:
 	enter	0, 0
 	push	eax
@@ -152,7 +158,7 @@ print:
 
 	mov		eax, SYS_WRITE
 	mov		ebx, STDOUT
-	mov		ecx, address
+	mov		ecx, string
 	mov		edx, size
 	int		80h
 
@@ -166,19 +172,19 @@ print:
 ; Lê uma string do teclado
 ; Parâmetros:
 ;	 1 - tamanho da string em bytes
-;	 2 - endereço da string
-; Retorno: quantidade de bytes lidos
+;	 2 - ponteiro para a string
+; Retorno: quantidade de caracteres
 %define		size	dword	[ebp + 12]
-%define		address	dword	[ebp + 8]
+%define		string	dword	[ebp + 8]
 read:
-	enter	0, 0
+	enter	0, 0							; Cria o frame de pilha
 	push	ebx
 	push	ecx
 	push	edx
 
 	mov		eax, SYS_READ
 	mov		ebx, STDIN
-	mov		ecx, address
+	mov		ecx, string
 	mov		edx, size
 	int		80h
 
@@ -190,7 +196,7 @@ read:
 
 ; Imprime um inteiro na tela
 ; Parâmetros:
-;	 1 - o inteiro
+;	 1 - valor do inteiro
 ; Retorno: nenhum
 %define		integer	dword	[ebp + 8]
 %define		string	dword	[ebp - 4]
@@ -216,7 +222,7 @@ printi:
 
 ; Lê um inteiro do teclado
 ; Parâmetros: nenhum
-; Retorno: o inteiro
+; Retorno: valor do inteiro
 %define		string	dword	[ebp - 4]
 readi:
 	enter	16, 0
@@ -242,11 +248,11 @@ readi:
 ; Parâmetros:
 ;	 1 - o inteiro
 ;	 2 - tamanho da string em bytes
-;	 3 - endereço da string
-; Retorno: quantidade de símbolos
+;	 3 - ponteiro para a string
+; Retorno: quantidade de caracteres
 %define		integer	dword	[ebp + 16]
 %define		size	dword	[ebp + 12]
-%define		address	dword	[ebp + 8]
+%define		string	dword	[ebp + 8]
 %define		buffer	dword	[ebp - 4]
 %define		value	dword	[ebp - 8]
 %define		char	word	[ebp - 10]
@@ -286,24 +292,22 @@ itos:
 
 	add		dl, '0'
 	mov		char, dx
-
 	mov		[ebx + esi], dl
 
 	inc		esi
-
 	cmp		value, 0
 	jne		.itos_l1
 
 	cmp		minus, TRUE
 	jne		.itos_l2
 
-	mov		ebx, address
+	mov		ebx, string
 	mov		byte [ebx], '-'
 
 	inc		edi
 .itos_l2:
 	cmp		esi, 0
-	jbe		.itos_l3
+	je		.itos_l3
 
 	cmp		edi, size
 	jae		.itos_l3
@@ -315,7 +319,7 @@ itos:
 	mov		al, [ebx + esi]
 	mov		char, ax
 
-	mov		ebx, address
+	mov		ebx, string
 	mov		[ebx + edi], al
 
 	inc		edi
@@ -334,10 +338,10 @@ itos:
 ; Converte uma string em um inteiro
 ; Parâmetros:
 ;	 1 - tamanho da string em bytes
-;	 2 - endereço da string
+;	 2 - ponteiro para a string
 ; Retorno: o inteiro
 %define		size	dword	[ebp + 12]
-%define		address	dword	[ebp + 8]
+%define		string	dword	[ebp + 8]
 %define		value	dword	[ebp - 4]
 %define		char	word	[ebp - 6]
 %define		digit	word	[ebp - 8]
@@ -353,7 +357,7 @@ stoi:
 	mov		esi, 0
 
 	mov		eax, 0
-	mov		ebx, address
+	mov		ebx, string
 	mov		al, [ebx]
 	mov		char, ax
 
@@ -361,7 +365,6 @@ stoi:
 	jne		.stoi_l1
 
 	mov		minus, TRUE
-
 	inc		esi
 .stoi_l1:
 	cmp		esi, size
@@ -372,10 +375,10 @@ stoi:
 	imul	eax, 10
 
 	mov		dl, [ebx + esi]
-	mov		digit, dx
+	mov		char, dx
 
 	sub		dl, '0'
-	mov		char, dx
+	mov		digit, dx
 
 	add		eax, edx
 	mov		value, eax
