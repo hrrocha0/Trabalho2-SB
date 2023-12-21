@@ -1,5 +1,6 @@
 # Software Básico (2023.2) - Trabalho 2
 - Henrique Rodrigues Rocha: 211036061
+- Vinícius de Sousa Brito
 
 ## Informações
 Aqui constam informações a respeito do desenvolvimento do trabalho:
