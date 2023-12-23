@@ -1,13 +1,14 @@
 section	.text
-; Realiza a operação de subtração
+; Realiza a operação de resto (mod) de 32 bits
 %define		first	dword	[ebp - 4]
 %define		second	dword	[ebp - 8]
 %define		result	dword	[ebp - 12]
 %define		char	word	[ebp - 14]
-op_sub:
+op_mod:
 	enter	14, 0
 	push	eax
 	push	ebx
+	push	edx
 
 	call	readi
 	mov		first, eax
@@ -15,13 +16,16 @@ op_sub:
 	call	readi
 	mov		second, eax
 
+	mov		edx, 0
 	mov		eax, first
-	sub		eax, second
+	idiv	second
+	mov		eax, edx
+	cwde
 	mov		result, eax
 
 	push	eax
 	call	printi
-.op_sub_l1:
+.op_mod_l1:
 	lea		ebx, char
 
 	push	1
@@ -30,9 +34,10 @@ op_sub:
 
 	mov		ax, char
 	cmp		al, LF
-	jne		.op_sub_l1
+	jne		.op_mod_l1
 
+	pop		edx
 	pop		ebx
-	pop		eax
+    pop		eax
 	leave
 	ret

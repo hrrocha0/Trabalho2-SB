@@ -1,5 +1,5 @@
 section	.text
-; Realiza a operação de exponenciação
+; Realiza a operação de exponenciação de 32 bits
 %define		first	dword	[ebp - 4]
 %define		second	dword	[ebp - 8]
 %define		result	dword	[ebp - 12]

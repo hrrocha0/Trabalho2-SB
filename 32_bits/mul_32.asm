@@ -1,13 +1,14 @@
 section	.text
-; Realiza a operação de adição
+; Realiza a operação de multiplicação de 32 bits
 %define		first	dword	[ebp - 4]
 %define		second	dword	[ebp - 8]
 %define		result	dword	[ebp - 12]
 %define		char	word	[ebp - 14]
-op_add:
+op_mul:
 	enter	14, 0
 	push	eax
 	push	ebx
+	push	edx
 
 	call	readi
 	mov		first, eax
@@ -15,24 +16,38 @@ op_add:
 	call	readi
 	mov		second, eax
 
+	mov		edx, 0
 	mov		eax, first
-	add		eax, second
+	imul	second
 	mov		result, eax
 
-	push	eax
-	call	printi
-.op_add_l1:
-	lea		ebx, char
+	cmp		edx, 0
+	jg		.op_mul_l2
 
+	cmp		edx, -1
+	jl		.op_mul_l2
+
+	push	result
+	call	printi
+.op_mul_l1:
+	lea		ebx, char
 	push	1
 	push	ebx
 	call	read
 
 	mov		ax, char
 	cmp		al, LF
-	jne		.op_add_l1
+	jne		.op_mul_l1
 
+	pop		edx
 	pop		ebx
 	pop		eax
 	leave
 	ret
+.op_mul_l2:
+	push	EMSG1_SIZE
+	push	emsg1
+	call	print
+
+	push	1
+	call	exit

@@ -90,7 +90,7 @@ _start:
 
 ; Realiza uma operação
 ; Parâmetros:
-;	 1 - o código da operação
+;	 1 - código da operação
 ; Retorno: nenhum
 %define		code	dword	[ebp + 8]
 execute:
@@ -412,9 +412,9 @@ exit:
 	int		80h
 
 ; Includes
-%include	"add.asm"
-%include	"sub.asm"
-%include	"mul.asm"
-%include	"div.asm"
-%include	"exp.asm"
-%include	"mod.asm"
+%include	"add_32.asm"
+%include	"sub_32.asm"
+%include	"mul_32.asm"
+%include	"div_32.asm"
+%include	"exp_32.asm"
+%include	"mod_32.asm"

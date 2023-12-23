@@ -1,3 +1,10 @@
 /.idea
 /cmake-build-debug
+/cmake-build-release
 CMakeLists.txt
+
+32_bits/calculadora_32.o
+32_bits/calculadora_32
+
+16_bits/calculadora_16.o
+16_bits/calculadora_16

@@ -90,7 +90,7 @@ _start:
 
 ; Realiza uma operação
 ; Parâmetros:
-;	 1 - o código da operação
+;	 1 - código da operação
 ; Retorno: nenhum
 %define		code	dword	[ebp + 8]
 execute:
@@ -140,7 +140,7 @@ execute:
 ; Imprime uma string na tela
 ; Parâmetros:
 ;	 1 - tamanho da string em bytes
-;	 2 - endereço da string
+;	 2 - ponteiro para a string
 ; Retorno: nenhum
 %define		size	dword	[ebp + 12]
 %define		address	dword	[ebp + 8]
@@ -168,7 +168,7 @@ print:
 ; Parâmetros:
 ;	 1 - tamanho da string em bytes
 ;	 2 - endereço da string
-; Retorno: quantidade de bytes lidos
+; Retorno: quantidade de caracteres
 %define		size	dword	[ebp + 12]
 %define		address	dword	[ebp + 8]
 read:
@@ -191,19 +191,19 @@ read:
 
 ; Imprime um inteiro na tela
 ; Parâmetros:
-;	 1 - o inteiro
+;	 1 - valor do inteiro
 ; Retorno: nenhum
-%define		integer	dword	[ebp + 8]
+%define		integer	word	[ebp + 8]
 %define		string	dword	[ebp - 4]
 printi:
-	enter	16, 0
+	enter	11, 0
 	push	ebx
 
-	lea		ebx, [ebp - 16]
+	lea		ebx, [ebp - 11]
 	mov		string, ebx
 
 	push	integer
-	push	12
+	push	7
 	push	string
 	call	itos
 
@@ -213,20 +213,20 @@ printi:
 
 	pop		ebx
 	leave
-	ret		4
+	ret		2
 
 ; Lê um inteiro do teclado
 ; Parâmetros: nenhum
-; Retorno: o inteiro
+; Retorno: valor do inteiro
 %define		string	dword	[ebp - 4]
 readi:
-	enter	16, 0
+	enter	11, 0
 	push	ebx
 
-	lea		ebx, [ebp - 16]
+	lea		ebx, [ebp - 11]
 	mov		string, ebx
 
-	push	12
+	push	7
 	push	string
 	call	read
 
@@ -241,31 +241,31 @@ readi:
 
 ; Converte um inteiro em uma string
 ; Parâmetros:
-;	 1 - o inteiro
+;	 1 - valor do inteiro
 ;	 2 - tamanho da string em bytes
-;	 3 - endereço da string
-; Retorno: quantidade de símbolos
-%define		integer	dword	[ebp + 16]
+;	 3 - ponteiro para a string
+; Retorno: quantidade de caracteres
+%define		integer	word	[ebp + 16]
 %define		size	dword	[ebp + 12]
-%define		address	dword	[ebp + 8]
+%define		string	dword	[ebp + 8]
 %define		buffer	dword	[ebp - 4]
-%define		value	dword	[ebp - 8]
-%define		char	word	[ebp - 10]
-%define		digit	word	[ebp - 12]
-%define		minus	word	[ebp - 14]
+%define		value	word	[ebp - 6]
+%define		char	word	[ebp - 8]
+%define		digit	word	[ebp - 10]
+%define		minus	word	[ebp - 12]
 itos:
-	enter	26, 0
+	enter	19, 0
 	push	ebx
 	push	ecx
 	push	edx
 	push	esi
 	push	edi
 
-	lea		ebx, [ebp - 26]
+	lea		ebx, [ebp - 19]
 	mov		buffer, ebx
 
-	mov		eax, integer
-	mov		value, eax
+	mov		ax, integer
+	mov		value, ax
 
 	mov		minus, FALSE
 	mov		esi, 0
@@ -277,12 +277,12 @@ itos:
 	mov		minus, TRUE
 	neg		value
 .itos_l1:
-	mov		eax, value
-	mov		edx, 0
-	mov		ecx, 10
-	idiv	ecx
+	mov		ax, value
+	mov		dx, 0
+	mov		cx, 10
+	idiv	cx
 
-	mov		value, eax
+	mov		value, ax
 	mov		digit, dx
 
 	add		dl, '0'
@@ -298,7 +298,7 @@ itos:
 	cmp		minus, TRUE
 	jne		.itos_l2
 
-	mov		ebx, address
+	mov		ebx, string
 	mov		byte [ebx], '-'
 
 	inc		edi
@@ -316,7 +316,7 @@ itos:
 	mov		al, [ebx + esi]
 	mov		char, ax
 
-	mov		ebx, address
+	mov		ebx, string
 	mov		[ebx + edi], al
 
 	inc		edi
@@ -330,21 +330,21 @@ itos:
 	pop		ecx
 	pop		ebx
 	leave
-	ret		12
+	ret		10
 
 ; Converte uma string em um inteiro
 ; Parâmetros:
 ;	 1 - tamanho da string em bytes
-;	 2 - endereço da string
-; Retorno: o inteiro
+;	 2 - ponteiro para a string
+; Retorno: valor do inteiro
 %define		size	dword	[ebp + 12]
-%define		address	dword	[ebp + 8]
-%define		value	dword	[ebp - 4]
-%define		char	word	[ebp - 6]
-%define		digit	word	[ebp - 8]
-%define		minus	word	[ebp - 10]
+%define		string	dword	[ebp + 8]
+%define		value	word	[ebp - 2]
+%define		char	word	[ebp - 4]
+%define		digit	word	[ebp - 6]
+%define		minus	word	[ebp - 8]
 stoi:
-	enter	10, 0
+	enter	8, 0
 	push	ebx
 	push	edx
 	push	esi
@@ -354,7 +354,7 @@ stoi:
 	mov		esi, 0
 
 	mov		eax, 0
-	mov		ebx, address
+	mov		ebx, string
 	mov		al, [ebx]
 	mov		char, ax
 
@@ -368,9 +368,9 @@ stoi:
 	cmp		esi, size
 	jae		.stoi_l2
 
-	mov		eax, value
-	mov		edx, 0
-	imul	eax, 10
+	mov		ax, value
+	mov		dx, 0
+	imul	ax, 10
 
 	mov		dl, [ebx + esi]
 	mov		digit, dx
@@ -378,8 +378,8 @@ stoi:
 	sub		dl, '0'
 	mov		char, dx
 
-	add		eax, edx
-	mov		value, eax
+	add		ax, dx
+	mov		value, ax
 
 	inc		esi
 	jmp		.stoi_l1
@@ -389,7 +389,7 @@ stoi:
 
 	neg		value
 .stoi_l3:
-	mov		eax, value
+	mov		ax, value
 
 	pop		esi
 	pop		edx
@@ -399,7 +399,7 @@ stoi:
 
 ; Termina a execução do programa
 ; Parâmetros:
-;	 1 - Código de saída
+;	 1 - código de saída
 ; Retorno: nenhum
 %define		code	dword	[ebp + 8]
 exit:
@@ -409,9 +409,9 @@ exit:
 	int		80h
 
 ; Includes
-%include	"add16.asm"
-%include	"sub16.asm"
-%include	"mul16.asm"
-%include	"div16.asm"
-%include	"exp16.asm"
-%include	"mod16.asm"
+%include	"add_16.asm"
+%include	"sub_16.asm"
+%include	"mul_16.asm"
+%include	"div_16.asm"
+%include	"exp_16.asm"
+%include	"mod_16.asm"
